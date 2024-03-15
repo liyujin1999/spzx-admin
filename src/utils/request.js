@@ -45,7 +45,9 @@ service.interceptors.request.use(
   config => {
     const { authorization } = useApp()
     if (authorization) {
-      config.headers.Authorization = `Bearer ${authorization.token}`
+      // config.headers.Authorization = `Bearer ${authorization.token}`
+      // 上传传递方式后端解析太麻烦，因此可以更改传递token方式为如下方式
+      config.headers.token = `${authorization.token}`
     }
     return config
   },
