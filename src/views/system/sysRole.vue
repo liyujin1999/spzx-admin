@@ -50,7 +50,7 @@
                 <el-button type="primary" size="small" @click="editShow(scope.row)">
                     修改
                 </el-button>
-                <el-button type="danger" size="small">
+                <el-button type="danger" size="small" @click="deleteById(scope.row)">
                     删除
                 </el-button>
             </el-table-column>
@@ -72,8 +72,24 @@
 
 <script setup>
 import { ref , onMounted } from 'vue';
-import { GetSysRoleListByPage, SaveSysRole, UpdateSysRole} from '@/api/sysRole';
-import { ElMessage } from 'element-plus'
+import { GetSysRoleListByPage, SaveSysRole, UpdateSysRole, DeleteSysRoleById} from '@/api/sysRole';
+import { ElMessage, ElMessageBox} from 'element-plus'
+// 删除数据
+const deleteById = (row) => {
+    ElMessageBox.confirm('此操作将永久删除该记录, 是否继续?', 'Warning', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+    }).then(async () => {
+       const {code } = await DeleteSysRoleById(row.id)
+       if(code === 200) {
+            ElMessage.success('删除成功')
+            pageParams.value.page = 1
+            fetchData()
+       }
+    })
+}
+
 /////////角色添加和修改
 //表单数据模型
 const defaultForm = {
