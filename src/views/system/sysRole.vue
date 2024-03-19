@@ -45,13 +45,14 @@
             <el-table-column prop="roleName" label="角色名称" width="180" />
             <el-table-column prop="roleCode" label="角色code" width="180" />
             <el-table-column prop="createTime" label="创建时间" />
-            <el-table-column label="操作" align="center" width="280">
-            <el-button type="primary" size="small">
-                修改
-            </el-button>
-            <el-button type="danger" size="small">
-                删除
-            </el-button>
+            <el-table-column prop="description" label="描述" />
+            <el-table-column label="操作" align="center" width="280" #default="scope">
+                <el-button type="primary" size="small" @click="editShow(scope.row)">
+                    修改
+                </el-button>
+                <el-button type="danger" size="small">
+                    删除
+                </el-button>
             </el-table-column>
         </el-table>
 
@@ -71,9 +72,9 @@
 
 <script setup>
 import { ref , onMounted } from 'vue';
-import { GetSysRoleListByPage, SaveSysRole} from '@/api/sysRole';
+import { GetSysRoleListByPage, SaveSysRole, UpdateSysRole} from '@/api/sysRole';
 import { ElMessage } from 'element-plus'
-/////////角色添加
+/////////角色添加和修改
 //表单数据模型
 const defaultForm = {
     id: "",
@@ -81,17 +82,31 @@ const defaultForm = {
     roleName: "",
     description: ""
 }
+
+// 修改按钮点击事件处理函数
+const editShow = (row) => {
+        sysRole.value = {...row}
+        dialogVisible.value = true
+}
+
 const sysRole = ref(defaultForm)   // 使用ref包裹该对象，使用reactive不方便进行重置
-// 添加角色
+// 添加和修改角色的方法
+//判断sysRole包含id则是修改，不包含id则是添加操作
 const submit = async () => {
-    const { code } = await SaveSysRole(sysRole.value);
-    if(code === 200) {
-        //关闭弹框
-        dialogVisible.value = false
-        //提示信息
-        ElMessage.success('操作成功')
-        //刷新页面
-        fetchData()
+    if(!sysRole.value.id) {//有id添加
+        const { code } = await SaveSysRole(sysRole.value) ;
+        if(code === 200) {
+            dialogVisible.value = false
+            ElMessage.success('操作成功')
+            fetchData()
+        }
+    }else {//修改
+        const { code } = await UpdateSysRole(sysRole.value) ;
+        if(code === 200) {
+            dialogVisible.value = false
+            ElMessage.success('操作成功')
+            fetchData()
+        }
     }
 }
 // 控制对话是否展示的变量
