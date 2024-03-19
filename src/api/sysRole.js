@@ -8,3 +8,12 @@ export const GetSysRoleListByPage = (current,limit,queryDto) => {
         data: queryDto,
     })
 }
+
+// 添加角色请求方法
+export const SaveSysRole = (sysRole) => {
+    return request({
+        url: '/admin/system/sysRole/saveSysRole',
+        method: 'post',
+        data: sysRole,
+    })
+}
